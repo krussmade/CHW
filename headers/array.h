@@ -64,10 +64,10 @@ public:
         return *this;
     }
 
-    Array copy(int from, int count) {
+    Array copy(int from, int count) const {
         Array result(count);
         for (int i = from; i < from + count; ++i) {
-            result[i - from] = data_[i];
+            result.data_[i - from] = data_[i];
         }
         return result;
     }

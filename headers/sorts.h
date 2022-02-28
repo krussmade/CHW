@@ -5,10 +5,24 @@
 #include "array.h"
 #include <string>
 
+// Функция проверки на отсортированность
+template<typename T>
+bool isSorted(const Array<T> &data) {
+    for (int i = 0; i < data.size() - 1; i++) {
+        if (data[i] > data[i + 1]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Интерфейс сортировки
 template<typename T>
 struct ISort {
+    // Название сортировки для отображения в таблице
     virtual std::string name() = 0;
 
+    // Сама сортировка
     virtual void sort(Array<T> &data) = 0;
 
     virtual ~ISort() = default;
@@ -16,10 +30,12 @@ struct ISort {
 
 template<typename T>
 struct SelectionSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Selection sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         for (int idx = 0; idx < (data.size() - 1); ++idx) {
             size_t smallest_idx = idx;
@@ -35,10 +51,12 @@ struct SelectionSort : public ISort<T> {
 
 template<typename T>
 struct BubbleSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Bubble sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         for (int i = 0; i < data.size(); ++i) {
             for (int j = i + 1; j < data.size(); ++j) {
@@ -51,33 +69,66 @@ struct BubbleSort : public ISort<T> {
 };
 
 template<typename T>
-struct BubbleSortIverson : public ISort<T> {
+struct BubbleSortWithTheFirstAndTheSecondIversonConditions : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
-        return "Bubble Iverson sort";
+        return "Bubble sort with the first and second Iverson condition";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
-        for (int i = data.size(); i > 1; --i) {
-            bool iverson_value = false;
-            for (int j = 1; j < i; ++j) {
-                if (data[j] < data[j - 1]) {
-                    std::swap(data[j], data[j - 1]);
-                    iverson_value = true;
+        int i = 0, size = data.size();
+        int bound = size - 2, last_bound;
+        bool is_need_to_sort = true;
+        while (is_need_to_sort || bound != 0) {
+            is_need_to_sort = false;
+            last_bound = 0;
+            for (int j = 0; j <= bound; ++j) {
+                if (data[j] > data[j + 1]) {
+                    std::swap(data[j], data[j + 1]);
+                    is_need_to_sort = true;
+                    last_bound = j;
                 }
             }
-            if (!iverson_value) {
-                return;
+            bound = last_bound;
+            ++i;
+        }
+    }
+};
+
+template<typename T>
+struct BubbleSortWithTheFirstIversonCondition : public ISort<T> {
+    // Название сортировки для отображения в таблице
+    inline std::string name() override {
+        return "Bubble sort with the first Iverson condition";
+    }
+
+    // Реализация сортировки
+    inline void sort(Array<T> &data) override {
+        int size = data.size();
+        int i = 0;
+        bool is_need_to_sort = true;
+        while (is_need_to_sort) {
+            is_need_to_sort = false;
+            for (int j = 0; j < size - 1 - i; ++j) {
+                if (data[j] > data[j + 1]) {
+                    std::swap(data[j], data[j + 1]);
+                    is_need_to_sort = true;
+                }
             }
+            ++i;
         }
     }
 };
 
 template<typename T>
 struct InsertSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Insert sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         for (int i = 1; i < data.size(); ++i) {
             T temp = data[i];
@@ -93,10 +144,12 @@ struct InsertSort : public ISort<T> {
 
 template<typename T>
 struct BinaryInsertSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Binary insert sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         for (int idx = 1; idx < data.size(); ++idx) {
             if (data[idx - 1] > data[idx]) {
@@ -122,10 +175,12 @@ struct BinaryInsertSort : public ISort<T> {
 
 template<typename T>
 struct CountSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Count sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         int min = data[0];
         int max = data[0];
@@ -157,15 +212,18 @@ struct CountSort : public ISort<T> {
 
 template<typename T>
 struct RadixSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Radix sort";
     }
 
+    // Получение части числа по маске
     inline static uint32_t digit(uint32_t number, int index) {
         uint32_t mask = 255 << (8 * index);
         return (number & mask) >> (8 * index);
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         int counter[256];
         for (int index = 0; index < sizeof(T); ++index) {
@@ -195,10 +253,12 @@ struct RadixSort : public ISort<T> {
 
 template<typename T>
 struct MergeSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Merge sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         mergeSort(data, 0, data.size());
     }
@@ -236,10 +296,12 @@ struct MergeSort : public ISort<T> {
 
 template<typename T>
 struct HoareSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Hoare sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         quickSort(data, 0, data.size() - 1);
     }
@@ -270,10 +332,12 @@ struct HoareSort : public ISort<T> {
 
 template<typename T>
 struct LomutoSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Lomuto sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         quickSort(data, 0, data.size() - 1);
     }
@@ -301,10 +365,12 @@ struct LomutoSort : public ISort<T> {
 
 template<typename T>
 struct HeapSort : public ISort<T> {
+    // Название сортировки для отображения в таблице
     inline std::string name() override {
         return "Heap sort";
     }
 
+    // Реализация сортировки
     inline void sort(Array<T> &data) override {
         for (int i = data.size() / 2 - 1; i >= 0; --i) {
             heapify(data, data.size(), i);
