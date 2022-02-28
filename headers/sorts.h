@@ -7,7 +7,7 @@
 
 // Функция проверки на отсортированность
 template<typename T>
-bool isSorted(const Array<T> &data) {
+static bool isSorted(const Array<T> &data) {
     for (int i = 0; i < data.size() - 1; i++) {
         if (data[i] > data[i + 1]) {
             return false;

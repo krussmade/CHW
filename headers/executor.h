@@ -37,83 +37,6 @@ public:
         }
     }
 
-    void execute(std::ofstream &out, int from, int to, int step) {
-        Array<int> numbers_from_0_to_5(4100);
-        Array<int> numbers_from_0_to_4000(4100);
-        Array<int> numbers_almost_sorted(4100);
-        Array<int> numbers_in_reverse_order(4100);
-
-        for (int i = 0; i < numbers_from_0_to_5.size(); ++i) {
-            numbers_from_0_to_5[i] = rand() % 5;
-            numbers_from_0_to_4000[i] = rand() % 4000;
-
-            if (i % 1000 == 0 && i >= 1000) {
-                for (int j = 0; j < 10; ++j) {
-                    numbers_almost_sorted[i - j] = i - 10 + j;
-                }
-            } else {
-                numbers_almost_sorted[i] = i;
-            }
-
-            numbers_in_reverse_order[i] = numbers_in_reverse_order.size() - i;
-        }
-
-        out << ";";
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out << sort_options_[i]->name() << " 0 - 5;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out << sort_options_[i]->name() << " 0 - 4000;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out << sort_options_[i]->name() << " almost sorted;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out << sort_options_[i]->name() << " in reverse order;";
-        }
-        out << std::endl;
-
-        for (int i = from; i <= to; i += step) {
-            out << i << ";";
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_5.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out << std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_4000.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out << std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_almost_sorted.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out << std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_in_reverse_order.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out << std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count() << ";";
-            }
-            out << std::endl;
-        }
-    }
-
     void execute(std::ofstream &out_50_300, std::ofstream &out_100_4100) {
         Array<int> numbers_from_0_to_5(4100);
         Array<int> numbers_from_0_to_4000(4100);
@@ -135,105 +58,106 @@ public:
             numbers_in_reverse_order[i] = numbers_in_reverse_order.size() - i;
         }
 
-        out_50_300 << ";";
-        out_100_4100 << ";";
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out_50_300 << sort_options_[i]->name() << " 0 - 5;";
-            out_100_4100 << sort_options_[i]->name() << " 0 - 5;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out_50_300 << sort_options_[i]->name() << " 0 - 4000;";
-            out_100_4100 << sort_options_[i]->name() << " 0 - 4000;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out_50_300 << sort_options_[i]->name() << " almost sorted;";
-            out_100_4100 << sort_options_[i]->name() << " almost sorted;";
-        }
-
-        for (int i = 0; i < sort_options_.size(); ++i) {
-            out_50_300 << sort_options_[i]->name() << " in reverse order;";
-            out_100_4100 << sort_options_[i]->name() << " in reverse order;";
-        }
-
-        out_50_300 << std::endl;
-        out_100_4100 << std::endl;
+        initializeTable(out_50_300);
+        initializeTable(out_100_4100);
 
         // 50 - 300
         for (int i = 50; i <= 300; i += 10) {
             out_50_300 << i << ";";
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_5.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_50_300 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_4000.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_50_300 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_almost_sorted.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_50_300 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_in_reverse_order.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_50_300 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
+            testSorts(numbers_from_0_to_5, i, out_50_300);
+            testSorts(numbers_from_0_to_4000, i, out_50_300);
+            testSorts(numbers_almost_sorted, i, out_50_300);
+            testSorts(numbers_in_reverse_order, i, out_50_300);
             out_50_300 << std::endl;
         }
 
         // 100 - 4100
         for (int i = 100; i <= 4100; i += 100) {
             out_100_4100 << i << ";";
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_5.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_100_4100 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_from_0_to_4000.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_100_4100 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_almost_sorted.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_100_4100 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
-            for (int j = 0; j < sort_options_.size(); ++j) {
-                auto array = numbers_in_reverse_order.copy(0, i);
-
-                auto start = std::chrono::high_resolution_clock::now();
-                sort_options_[j]->sort(array);
-                auto elapsed = std::chrono::high_resolution_clock::now() - start;
-                out_100_4100 << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << ";";
-            }
+            testSorts(numbers_from_0_to_5, i, out_100_4100);
+            testSorts(numbers_from_0_to_4000, i, out_100_4100);
+            testSorts(numbers_almost_sorted, i, out_100_4100);
+            testSorts(numbers_in_reverse_order, i, out_100_4100);
             out_100_4100 << std::endl;
+        }
+
+        // Debug - info
+        std::ofstream input("input.txt");
+        std::ofstream output("output.txt");
+
+        for (int i = 0; i < 4100; ++i) {
+            input << numbers_from_0_to_5[i] << " ";
+        }
+        input << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            input << numbers_from_0_to_4000[i] << " ";
+        }
+        input << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            input << numbers_almost_sorted[i] << " ";
+        }
+        input << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            input << numbers_in_reverse_order[i] << " ";
+        }
+        input << std::endl;
+
+        HeapSort<int> debug_sort;
+        debug_sort.sort(numbers_from_0_to_5);
+        debug_sort.sort(numbers_from_0_to_4000);
+        debug_sort.sort(numbers_almost_sorted);
+        debug_sort.sort(numbers_in_reverse_order);
+
+        for (int i = 0; i < 4100; ++i) {
+            output << numbers_from_0_to_5[i] << " ";
+        }
+        output << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            output << numbers_from_0_to_4000[i] << " ";
+        }
+        output << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            output << numbers_almost_sorted[i] << " ";
+        }
+        output << std::endl;
+        for (int i = 0; i < 4100; ++i) {
+            output << numbers_in_reverse_order[i] << " ";
+        }
+        output << std::endl;
+
+        input.close();
+        output.close();
+    }
+
+private:
+    inline void initializeTable(std::ofstream &out) {
+        out << ";";
+        for (int i = 0; i < sort_options_.size(); ++i) {
+            out << sort_options_[i]->name() << " 0 - 5;";
+        }
+
+        for (int i = 0; i < sort_options_.size(); ++i) {
+            out << sort_options_[i]->name() << " 0 - 4000;";
+        }
+
+        for (int i = 0; i < sort_options_.size(); ++i) {
+            out << sort_options_[i]->name() << " almost sorted;";
+        }
+
+        for (int i = 0; i < sort_options_.size(); ++i) {
+            out << sort_options_[i]->name() << " in reverse order;";
+        }
+        out << std::endl;
+    }
+
+    inline void testSorts(const Array<int> &array_src, int idx, std::ofstream &out) {
+        for (int i = 0; i < sort_options_.size(); ++i) {
+            auto array = array_src.copy(0, idx);
+
+            auto start = std::chrono::high_resolution_clock::now();
+            sort_options_[i]->sort(array);
+            auto elapsed = std::chrono::high_resolution_clock::now() - start;
+            out << std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count() << ";";
         }
     }
 };
